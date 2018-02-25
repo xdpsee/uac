@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mybatis的配置文件 -->
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeAliases>
+        <typeAlias alias="User" type="com.zhenhui.demo.uac.core.dataobject.User"/>
+        <typeAlias alias="SocialAccount" type="com.zhenhui.demo.uac.core.dataobject.SocialAccount"/>
+        <typeAlias alias="Profile" type="com.zhenhui.demo.uac.core.dataobject.Profile"/>
+        <typeAlias alias="SocialType" type="com.zhenhui.demo.uac.common.SocialType"/>
+    </typeAliases>
+
+    <typeHandlers>
+        <typeHandler handler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.SocialTypeHandler"/>
+        <typeHandler handler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.ProfileTypeHandler"/>
+    </typeHandlers>
+
+    <mappers>
+        <mapper resource="mybatis/mapper/UserMapper.xml"/>
+        <mapper resource="mybatis/mapper/SocialAccountMapper.xml"/>
+    </mappers>
+
+</configuration>
+

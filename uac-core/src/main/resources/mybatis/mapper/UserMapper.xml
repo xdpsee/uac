@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhenhui.demo.uac.core.repository.mybatis.mapper.UserMapper">
+
+    <resultMap id="userMap" type="User">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="phone" column="phone"/>
+        <result property="secret" column="secret"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+        <result property="profile"
+                javaType="Profile"
+                column="profile"
+                typeHandler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.ProfileTypeHandler"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="User" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO users (
+            gmt_create,
+            gmt_modified,
+            phone,
+            secret,
+            nickname,
+            avatar,
+            `profile`
+        ) VALUES (
+            now(),
+            now(),
+            #{phone},
+            #{secret},
+            #{nickname},
+            #{avatar},
+            #{profile}
+        );
+    </insert>
+
+    <select id="selectById" resultMap="userMap">
+        SELECT *
+        FROM users
+        WHERE id = #{userId}
+    </select>
+
+    <select id="selectByPhone" resultMap="userMap">
+        SELECT *
+        FROM users
+        WHERE phone = #{phone}
+    </select>
+
+    <update id="updateAvatar">
+        UPDATE users SET avatar = #{avatar}, gmt_modified = NOW()
+        WHERE id = #{userId}
+    </update>
+
+    <update id="updateSecret">
+        UPDATE users SET secret = #{secret}, gmt_modified = NOW()
+        WHERE id = #{userId}
+    </update>
+
+</mapper>
+

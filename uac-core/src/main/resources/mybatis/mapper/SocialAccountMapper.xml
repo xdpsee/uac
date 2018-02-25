@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhenhui.demo.uac.core.repository.mybatis.mapper.SocialAccountMapper">
+
+    <resultMap id="socialAccountMap" type="SocialAccount">
+        <result property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="type"
+                javaType="SocialType"
+                column="type"
+                typeHandler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.SocialTypeHandler"/>
+        <result property="openId" column="open_id"/>
+        <result property="token" column="token"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+        <result property="activated" column="activated"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="SocialAccount" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO social_accounts (
+            gmt_create,
+            gmt_modified,
+            type,
+            open_id,
+            token,
+            nickname,
+            avatar,
+            activated,
+            user_id
+        ) VALUES (
+            #{gmtCreate},
+            #{gmtModified},
+            #{type},
+            #{openId},
+            #{token},
+            #{nickname},
+            #{avatar},
+            #{activated},
+            #{userId}
+        );
+    </insert>
+
+    <select id="selectByUserId" resultMap="socialAccountMap">
+        SELECT *
+        FROM social_accounts
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="select" resultMap="socialAccountMap">
+        SELECT *
+        FROM social_accounts
+        WHERE type = #{type} AND open_id = #{openId}
+    </select>
+
+    <update id="updateNicknameAvatar">
+        UPDATE social_accounts
+        SET gmt_modified = NOW()
+        <if test="nickname != null">
+            , nickname = #{nickname}
+        </if>
+        <if test="avatar != null">
+            , avatar = #{avatar}
+        </if>
+        WHERE type = #{type} AND open_id = #{openId}
+    </update>
+
+    <update id="updateUser">
+        UPDATE social_accounts
+        SET gmt_modified = NOW(), user_id = #{userId}
+        WHERE type = #{type} AND open_id = #{openId} AND user_id = #{originUserId}
+    </update>
+
+</mapper>
+
