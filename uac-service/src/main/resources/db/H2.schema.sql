@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   profile      VARCHAR(4096)      DEFAULT '{}',
   authorities  VARCHAR(128)       DEFAULT '[]',
   CONSTRAINT user_uk_1 UNIQUE (phone)
-);
+)DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS social_accounts (
   id           BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS social_accounts (
   activated    BOOL               DEFAULT 0,
   user_id      BIGINT             DEFAULT 0,
   CONSTRAINT social_account_uk_1 UNIQUE (type, open_id)
-);
+)DEFAULT CHARSET=utf8;
 
 CREATE INDEX social_account_idx_1
   ON social_accounts (user_id);

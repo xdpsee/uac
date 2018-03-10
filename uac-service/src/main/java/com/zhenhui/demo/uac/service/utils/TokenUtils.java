@@ -8,7 +8,6 @@ import com.zhenhui.demo.uac.security.utils.SecurityUtils;
 import com.zhenhui.demo.uac.service.common.Constants;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
@@ -23,7 +22,7 @@ public class TokenUtils {
         principal.setAuthorities(user.getAuthorities());
 
         return SecurityUtils.createToken(principal
-                , new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(Constants.TOKEN_EXPIRES_SECONDS)));
+                , TimeUnit.SECONDS.toMillis(Constants.TOKEN_EXPIRES_SECONDS));
     }
 
     public static String createToken(SocialAccount socialAccount) {
@@ -35,7 +34,7 @@ public class TokenUtils {
         principal.setAuthorities(Arrays.asList("USER"));
 
         return SecurityUtils.createToken(principal
-                , new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(Constants.TOKEN_EXPIRES_SECONDS)));
+                , TimeUnit.SECONDS.toMillis(Constants.TOKEN_EXPIRES_SECONDS));
     }
 
 }
