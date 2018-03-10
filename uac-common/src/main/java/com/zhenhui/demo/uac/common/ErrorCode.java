@@ -14,7 +14,10 @@ public enum ErrorCode {
     CAPTCHA_MISMATCH(10004, "验证码错误"),
     CAPTCHA_EXPIRED(10005, "验证码已过期"),
 
-    SECRET_TOOL_SHORT(10006, "密码长度太短,8~16字符");
+    SECRET_TOOL_SHORT(10006, "密码长度太短,8~16字符"),
+
+    USER_NOT_FOUND(10007, "用户不存在"),
+    SECRET_NOT_MATCH(10008, "密码错误");
 
     public final int code;
     public final String comment;

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
   nickname     VARCHAR(32) NOT NULL,
   avatar       VARCHAR(255)       DEFAULT '',
   profile      VARCHAR(4096)      DEFAULT '{}',
+  authorities  VARCHAR(128)       DEFAULT '[]',
   CONSTRAINT user_uk_1 UNIQUE (phone)
 );
 

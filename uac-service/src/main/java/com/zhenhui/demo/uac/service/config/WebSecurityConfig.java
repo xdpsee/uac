@@ -38,7 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         HttpMethod.GET, "/"
                 ).permitAll()
                 .antMatchers("/druid/**").permitAll()
-                .antMatchers("/registry"
+                .antMatchers("/user/registry"
+                        , "/user/signin"
                         , "/captcha/registry").permitAll()
                 .anyRequest().authenticated();
 

@@ -5,7 +5,8 @@ INSERT INTO users (
   secret,
   nickname,
   avatar,
-  `profile`
+  `profile`,
+  authorities
 )
 VALUES (
   NOW(),
@@ -14,7 +15,8 @@ VALUES (
   '123456',
   'zhenhui',
   '',
-  '{}'
+  '{}',
+  '["USER","ADMIN"]'
 );
 
 

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SuppressWarnings("unchecked")
 @RestController
-@RequestMapping("/registry")
+@RequestMapping("/user/registry")
 public class RegistryController {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryController.class);

@@ -26,7 +26,7 @@ public final class SecurityUtils {
     private static final String KEY_PHONE = "phone";
     private static final String KEY_SOCIAL_TYPE = "social_type";
     private static final String KEY_OPEN_ID = "open_id";
-    private static final String KEY_AUTHORITIES = "authorities";
+    private static final String KEY_AUTHORITIES = "roles";
 
     private static Algorithm algorithm;
     static  {
@@ -42,7 +42,7 @@ public final class SecurityUtils {
         return JWT.create()
                 .withIssuer("top-top")
                 .withIssuedAt(new Date())
-                .withAudience("top-top app")
+                .withAudience("top-top-app")
                 .withSubject(getSubject(principal))
                 .withExpiresAt(expireAt)
                 .withClaim(KEY_USER_ID, principal.getUserId())
@@ -80,7 +80,7 @@ public final class SecurityUtils {
                     principal.setPhone(v.asString());
                     break;
                 case KEY_SOCIAL_TYPE:
-                    principal.setType(SocialType.valueOf(v.as(String.class)));
+                    principal.setType(SocialType.valueOf(v.asString()));
                     break;
                 case KEY_OPEN_ID:
                     principal.setOpenId(v.asLong());
