@@ -4,7 +4,7 @@ import com.zhenhui.demo.uac.common.Response;
 import com.zhenhui.demo.uac.core.dataobject.User;
 import com.zhenhui.demo.uac.core.repository.UserRepository;
 import com.zhenhui.demo.uac.core.repository.exception.UserAlreadyExistsException;
-import com.zhenhui.demo.uac.service.common.ErrorCodes;
+import com.zhenhui.demo.uac.common.ErrorCode;
 import com.zhenhui.demo.uac.service.manager.CaptchaManager;
 import com.zhenhui.demo.uac.service.utils.PhoneUtils;
 import com.zhenhui.demo.uac.service.utils.TokenUtils;
@@ -36,21 +36,21 @@ public class RegistryController {
             , @RequestParam("captcha") String rawCaptcha) {
 
         if (!PhoneUtils.isValid(phone)) {
-            return Response.error(ErrorCodes.PHONE_NUMBER_INVALID);
+            return Response.error(ErrorCode.PHONE_NUMBER_INVALID);
         }
 
         try {
             final String captcha = captchaManager.lookupRegistryCaptcha(phone);
             if (StringUtils.isEmpty(captcha)) {
-                return Response.error(ErrorCodes.CAPTCHA_EXPIRED);
+                return Response.error(ErrorCode.CAPTCHA_EXPIRED);
             }
 
             if (!captcha.equals(rawCaptcha)) {
-                return Response.error(ErrorCodes.CAPTCHA_MISMATCH);
+                return Response.error(ErrorCode.CAPTCHA_MISMATCH);
             }
 
             if (StringUtils.isEmpty(secret) || secret.length() < 8) {
-                return Response.error(ErrorCodes.SECRET_TOOL_SHORT);
+                return Response.error(ErrorCode.SECRET_TOOL_SHORT);
             }
 
             final User user = userRepository.createUser(phone, secret);
@@ -59,9 +59,9 @@ public class RegistryController {
             return Response.success(TokenUtils.createToken(user));
 
         } catch (UserAlreadyExistsException e) {
-            return Response.error(ErrorCodes.PHONE_NUMBER_REGISTERED);
+            return Response.error(ErrorCode.PHONE_NUMBER_REGISTERED);
         } catch (Exception e) {
-            return Response.error(ErrorCodes.UNKNOWN);
+            return Response.error(ErrorCode.UNKNOWN);
         }
     }
 }

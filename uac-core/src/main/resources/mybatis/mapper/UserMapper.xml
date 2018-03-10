@@ -16,6 +16,11 @@
                 javaType="Profile"
                 column="profile"
                 typeHandler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.ProfileTypeHandler"/>
+        <result property="authorities"
+                javaType="java.util.List"
+                column="authorities"
+                typeHandler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.StringListTypeHandler"/>
+
     </resultMap>
 
     <insert id="insert" parameterType="User" useGeneratedKeys="true"
@@ -27,7 +32,8 @@
             secret,
             nickname,
             avatar,
-            `profile`
+            `profile`,
+            authorities
         ) VALUES (
             now(),
             now(),
@@ -35,7 +41,8 @@
             #{secret},
             #{nickname},
             #{avatar},
-            #{profile}
+            #{profile},
+            #{authorities}
         );
     </insert>
 

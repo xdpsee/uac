@@ -2,7 +2,7 @@ package com.zhenhui.demo.uac.service.controller;
 
 import com.zhenhui.demo.uac.core.dataobject.User;
 import com.zhenhui.demo.uac.core.repository.UserRepository;
-import com.zhenhui.demo.uac.core.utils.JSONUtil;
+import com.zhenhui.demo.uac.common.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,9 +15,9 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping(value = "/me")
+    @RequestMapping(value = "/info")
     @ResponseBody
-    public String me() {
+    public String info() {
 
         User user = userRepository.queryUser("18621816233");
 

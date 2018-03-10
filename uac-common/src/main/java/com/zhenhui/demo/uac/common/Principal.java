@@ -3,9 +3,11 @@ package com.zhenhui.demo.uac.common;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
-public class AuthInfo implements Serializable {
+public class Principal implements Serializable {
 
     private static final long serialVersionUID = -123490806309753L;
 
@@ -17,6 +19,6 @@ public class AuthInfo implements Serializable {
 
     private long openId;
 
-    private Boolean isAdmin = false;
+    private List<String> authorities = new ArrayList<>();
 
 }

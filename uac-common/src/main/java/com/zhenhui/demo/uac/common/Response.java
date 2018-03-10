@@ -41,8 +41,8 @@ public final class Response<T> {
 
     public static <T> Response error(ErrorCode error) {
         Response<T> response = new Response<>();
-        response.error = error.code();
-        response.message = error.comment();
+        response.error = error.code;
+        response.message = error.comment;
         response.data = null;
 
         return response;

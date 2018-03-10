@@ -2,7 +2,7 @@ package com.zhenhui.demo.uac.core.repository.mybatis.type.handlers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zhenhui.demo.uac.core.dataobject.Profile;
-import com.zhenhui.demo.uac.core.utils.JSONUtil;
+import com.zhenhui.demo.uac.common.JSONUtil;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 

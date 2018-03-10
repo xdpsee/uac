@@ -14,6 +14,7 @@
     <typeHandlers>
         <typeHandler handler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.SocialTypeHandler"/>
         <typeHandler handler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.ProfileTypeHandler"/>
+        <typeHandler handler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.StringListTypeHandler"/>
     </typeHandlers>
 
     <mappers>

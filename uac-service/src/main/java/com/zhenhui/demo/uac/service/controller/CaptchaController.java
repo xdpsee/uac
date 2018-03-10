@@ -1,7 +1,7 @@
 package com.zhenhui.demo.uac.service.controller;
 
 import com.zhenhui.demo.uac.common.Response;
-import com.zhenhui.demo.uac.service.common.ErrorCodes;
+import com.zhenhui.demo.uac.common.ErrorCode;
 import com.zhenhui.demo.uac.service.manager.CaptchaManager;
 import com.zhenhui.demo.uac.service.utils.PhoneUtils;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class CaptchaController {
     public Response<Boolean> registryCaptcha(@RequestParam("phone") String phone) {
 
         if (!PhoneUtils.isValid(phone)) {
-            return Response.error(ErrorCodes.PHONE_NUMBER_INVALID);
+            return Response.error(ErrorCode.PHONE_NUMBER_INVALID);
         }
 
         String captcha = captchaManager.createRegistryCaptcha(phone, true);
@@ -39,7 +39,7 @@ public class CaptchaController {
 
         } catch (Exception e) {
             logger.error("send captcha to phone:{} failure.", phone);
-            return Response.error(ErrorCodes.CAPTCHA_SEND_FAILURE);
+            return Response.error(ErrorCode.CAPTCHA_SEND_FAILURE);
         }
 
         return Response.success(true, captcha);

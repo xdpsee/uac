@@ -1,4 +1,4 @@
-package com.zhenhui.demo.uac.core.utils;
+package com.zhenhui.demo.uac.common;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;

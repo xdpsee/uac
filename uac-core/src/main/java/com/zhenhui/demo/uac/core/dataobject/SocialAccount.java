@@ -20,5 +20,3 @@ public class SocialAccount extends Entity {
 
     private Long userId = 0L;
 }
-
-
