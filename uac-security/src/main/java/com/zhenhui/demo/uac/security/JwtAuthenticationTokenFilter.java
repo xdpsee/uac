@@ -38,8 +38,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         try {
             String authHeader = request.getHeader(AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith(BEARER)) {
-                final String authToken = authHeader.substring(BEARER.length() + 1); // The part after "Bearer "
-                Principal principal = SecurityUtils.parseToken(authToken);
+                final String token = authHeader.substring(BEARER.length() + 1); // The part after "Bearer "
+                Principal principal = SecurityUtils.parseToken(token);
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal
                             , null

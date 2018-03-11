@@ -15,7 +15,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping(value = "/info")
+    @RequestMapping(value = "/info", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String info() {
 

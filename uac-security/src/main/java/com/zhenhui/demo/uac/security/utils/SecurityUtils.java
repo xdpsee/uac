@@ -20,39 +20,30 @@ public final class SecurityUtils {
     private static final String KEY_OPEN_ID = "open_id";
     private static final String KEY_AUTHORITIES = "roles";
 
-    private static final String secret = "gkzhLvOlWsayqv8TSJMAM16C60sPd286";
+    private static final Key signingKey = new SecretKeySpec(
+            DatatypeConverter.parseBase64Binary("gkzhLvOlWsayqv8TSJMAM16C60sPd286"), SignatureAlgorithm.HS512.getJcaName()
+    );
 
 
     public static String createToken(Principal principal, long ttlMillis) {
 
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
         long nowMillis = System.currentTimeMillis();
-        Date now = new Date(nowMillis);
 
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
-        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
-
-        Map<String,Object> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put(KEY_USER_ID, principal.getUserId());
         claims.put(KEY_PHONE, principal.getPhone());
         claims.put(KEY_SOCIAL_TYPE, principal.getType());
         claims.put(KEY_OPEN_ID, principal.getOpenId());
         claims.put(KEY_AUTHORITIES, principal.getAuthorities());
 
-        // TODO: JTI 待设置
-        JwtBuilder builder = Jwts.builder().setId("??????")
-                .setIssuedAt(now)
+        JwtBuilder builder = Jwts.builder()
                 .setSubject(getSubject(principal))
                 .setIssuer("toptop.mobi")
+                .setIssuedAt(new Date(nowMillis))
                 .setClaims(claims)
-                .signWith(signatureAlgorithm, signingKey);
+                .setExpiration(new Date(nowMillis + ttlMillis))
+                .signWith(SignatureAlgorithm.HS512, signingKey);
 
-        if (ttlMillis >= 0) {
-            long expMillis = nowMillis + ttlMillis;
-            Date exp = new Date(expMillis);
-            builder.setExpiration(exp);
-        }
 
         return builder.compact();
     }
@@ -60,9 +51,8 @@ public final class SecurityUtils {
     public static Principal parseToken(String token) throws InvalidTokenException, ExpiresTokenException {
 
         try {
-
             Claims claims = Jwts.parser()
-                    .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
+                    .setSigningKey(signingKey)
                     .parseClaimsJws(token).getBody();
 
             Principal principal = new Principal();
@@ -77,6 +67,7 @@ public final class SecurityUtils {
         } catch (ExpiredJwtException e) {
             throw new ExpiresTokenException("expired token", e);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new InvalidTokenException("invalid token", e);
         }
     }
@@ -121,6 +112,14 @@ public final class SecurityUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+        try {
+            Principal ps = SecurityUtils.parseToken("eyJhbGciOiJIUzUxMiJ9.eyJzb2NpYWxfdHlwZSI6Ik5PTkUiLCJ1c2VyX2lkIjoxLCJwaG9uZSI6IjE4NjIxODE2MjMzIiwib3Blbl9pZCI6MCwicm9sZXMiOlsiVVNFUiIsIkFETUlOIl0sImV4cCI6MTUyMjA1MDE3Mn0.X2sTB2GPunddKUCIbhoftI3dLkV7cS4i6Q8FTsk2uliqhpW8zbHss83Ya2nWT6PvXdgJvddI7XZiHM0FPBW20g");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

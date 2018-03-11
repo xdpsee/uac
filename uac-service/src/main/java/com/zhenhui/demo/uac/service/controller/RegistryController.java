@@ -29,7 +29,7 @@ public class RegistryController {
     @Autowired
     private CaptchaManager captchaManager;
 
-    @RequestMapping(path = "", produces = "application/json;utf-8")
+    @RequestMapping(path = "", produces = "application/json; charset=utf-8")
     @ResponseBody
     public Response<String> registry(@RequestParam("phone") String phone
             , @RequestParam("secret") String secret
