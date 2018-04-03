@@ -33,8 +33,8 @@
             activated,
             user_id
         ) VALUES (
-            #{gmtCreate},
-            #{gmtModified},
+            NOW(),
+            NOW(),
             #{type},
             #{openId},
             #{token},

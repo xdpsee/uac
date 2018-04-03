@@ -5,15 +5,19 @@ import com.zhenhui.demo.uac.common.SocialType;
 import com.zhenhui.demo.uac.core.dataobject.SocialAccount;
 import com.zhenhui.demo.uac.core.dataobject.User;
 import com.zhenhui.demo.uac.security.utils.SecurityUtils;
-import com.zhenhui.demo.uac.service.common.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
+@Component
 public class TokenUtils {
 
-    public static String createToken(User user) {
+    @Autowired
+    private SecurityUtils securityUtils;
+
+    public String createToken(User user) {
 
         Principal principal = new Principal();
         principal.setUserId(user.getId());
@@ -21,11 +25,10 @@ public class TokenUtils {
         principal.setType(SocialType.NONE);
         principal.setAuthorities(user.getAuthorities());
 
-        return SecurityUtils.createToken(principal
-                , TimeUnit.SECONDS.toMillis(Constants.TOKEN_EXPIRES_SECONDS));
+        return securityUtils.createToken(principal);
     }
 
-    public static String createToken(SocialAccount socialAccount) {
+    public String createToken(SocialAccount socialAccount) {
 
         Principal principal = new Principal();
         principal.setUserId(socialAccount.getId());
@@ -33,8 +36,7 @@ public class TokenUtils {
         principal.setOpenId(socialAccount.getOpenId());
         principal.setAuthorities(Arrays.asList("USER"));
 
-        return SecurityUtils.createToken(principal
-                , TimeUnit.SECONDS.toMillis(Constants.TOKEN_EXPIRES_SECONDS));
+        return securityUtils.createToken(principal);
     }
 
 }

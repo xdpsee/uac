@@ -12,7 +12,7 @@ VALUES (
   NOW(),
   NOW(),
   '18621816233',
-  '123456',
+  '$2a$09$bJSanuD8PWLGgfXxLW9wSOPssXCm4O/F1EkipT50JVd8sCsC.JDGa',
   'zhenhui',
   '',
   '{}',

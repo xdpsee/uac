@@ -5,6 +5,7 @@ import com.zhenhui.demo.uac.common.SocialType;
 import com.zhenhui.demo.uac.security.exception.ExpiresTokenException;
 import com.zhenhui.demo.uac.security.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -21,11 +22,16 @@ public final class SecurityUtils {
     private static final String KEY_AUTHORITIES = "roles";
 
     private static final Key signingKey = new SecretKeySpec(
-            DatatypeConverter.parseBase64Binary("gkzhLvOlWsayqv8TSJMAM16C60sPd286"), SignatureAlgorithm.HS512.getJcaName()
+            DatatypeConverter.parseBase64Binary("5A3274366145783254327858633246356358593456464E4B5455464E4D545A444E6A427A554751794F44593D"), SignatureAlgorithm.HS512.getJcaName()
     );
 
+    @Value("${jwt.auth.issuer}")
+    private String issuer;
 
-    public static String createToken(Principal principal, long ttlMillis) {
+    @Value("${jwt.auth.expires-in}")
+    private Long expiresInSeconds;
+
+    public String createToken(Principal principal) {
 
         long nowMillis = System.currentTimeMillis();
 
@@ -38,17 +44,16 @@ public final class SecurityUtils {
 
         JwtBuilder builder = Jwts.builder()
                 .setSubject(getSubject(principal))
-                .setIssuer("toptop.mobi")
+                .setIssuer(issuer)
                 .setIssuedAt(new Date(nowMillis))
                 .setClaims(claims)
-                .setExpiration(new Date(nowMillis + ttlMillis))
+                .setExpiration(new Date(nowMillis + expiresInSeconds * 1000))
                 .signWith(SignatureAlgorithm.HS512, signingKey);
-
 
         return builder.compact();
     }
 
-    public static Principal parseToken(String token) throws InvalidTokenException, ExpiresTokenException {
+    public Principal parseToken(String token) throws InvalidTokenException, ExpiresTokenException {
 
         try {
             Claims claims = Jwts.parser()
@@ -60,7 +65,7 @@ public final class SecurityUtils {
             principal.setUserId(claims.get(KEY_USER_ID, Long.class));
             principal.setPhone(claims.get(KEY_PHONE, String.class));
             principal.setType(SocialType.valueOf(claims.get(KEY_SOCIAL_TYPE, String.class)));
-            principal.setUserId(claims.get(KEY_OPEN_ID, Long.class));
+            principal.setOpenId(claims.get(KEY_OPEN_ID, Long.class));
             principal.setAuthorities((List<String>) claims.get(KEY_AUTHORITIES));
 
             return principal;
@@ -72,7 +77,7 @@ public final class SecurityUtils {
         }
     }
 
-    public static String getSubject(Principal principal) {
+    public String getSubject(Principal principal) {
 
         if (null == principal.getType() || SocialType.NONE == principal.getType()) {
             return "PH" + principal.getPhone();
@@ -92,22 +97,26 @@ public final class SecurityUtils {
 
     public static void main(String[] args) {
 
+        SecurityUtils securityUtils = new SecurityUtils();
+        securityUtils.expiresInSeconds = 3600L;
+        securityUtils.issuer = "toptop.mobi";
+
         long a = System.currentTimeMillis();
 
         Principal principal = new Principal();
-        principal.setUserId(1);
+        principal.setUserId(1L);
         principal.setPhone("1340202208");
         principal.setType(SocialType.NONE);
-        principal.setOpenId(0);
+        principal.setOpenId(0L);
         principal.setAuthorities(Arrays.asList("USER", "ADMIN"));
 
-        String token = SecurityUtils.createToken(principal, 12232232323L);
+        String token = securityUtils.createToken(principal);
         System.out.println(token);
         long b = System.currentTimeMillis();
         System.out.println(b - a);
 
         try {
-            Principal ps = SecurityUtils.parseToken(token);
+            Principal ps = securityUtils.parseToken(token);
             System.out.println(System.currentTimeMillis() - b);
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,7 +124,7 @@ public final class SecurityUtils {
 
 
         try {
-            Principal ps = SecurityUtils.parseToken("eyJhbGciOiJIUzUxMiJ9.eyJzb2NpYWxfdHlwZSI6Ik5PTkUiLCJ1c2VyX2lkIjoxLCJwaG9uZSI6IjE4NjIxODE2MjMzIiwib3Blbl9pZCI6MCwicm9sZXMiOlsiVVNFUiIsIkFETUlOIl0sImV4cCI6MTUyMjA1MDE3Mn0.X2sTB2GPunddKUCIbhoftI3dLkV7cS4i6Q8FTsk2uliqhpW8zbHss83Ya2nWT6PvXdgJvddI7XZiHM0FPBW20g");
+            Principal ps = securityUtils.parseToken("eyJhbGciOiJIUzUxMiJ9.eyJzb2NpYWxfdHlwZSI6Ik5PTkUiLCJ1c2VyX2lkIjoxLCJwaG9uZSI6IjEzNDAyMDIyMDgiLCJvcGVuX2lkIjowLCJyb2xlcyI6WyJVU0VSIiwiQURNSU4iXSwiZXhwIjoxNTMzMjY1OTk1fQ.Sc2bG2VEYLHZnd7v3v7l6f-9AgQQ0tdqrNWpVM54IxFJYYMvRV9baBZn_-GS0p6RZJQvZtzHU62Uvft9s9L-Nw");
         } catch (Exception e) {
             e.printStackTrace();
         }

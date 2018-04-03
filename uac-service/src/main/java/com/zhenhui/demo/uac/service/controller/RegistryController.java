@@ -28,6 +28,8 @@ public class RegistryController {
     private UserRepository userRepository;
     @Autowired
     private CaptchaManager captchaManager;
+    @Autowired
+    private TokenUtils tokenUtils;
 
     @RequestMapping(path = "", produces = "application/json; charset=utf-8")
     @ResponseBody
@@ -40,7 +42,7 @@ public class RegistryController {
         }
 
         try {
-            final String captcha = captchaManager.lookupRegistryCaptcha(phone);
+            final String captcha = captchaManager.lookupCaptcha(phone);
             if (StringUtils.isEmpty(captcha)) {
                 return Response.error(ErrorCode.CAPTCHA_EXPIRED);
             }
@@ -54,9 +56,9 @@ public class RegistryController {
             }
 
             final User user = userRepository.createUser(phone, secret);
-            captchaManager.invalidRegistryCaptcha(phone);
+            captchaManager.invalidCaptcha(phone);
 
-            return Response.success(TokenUtils.createToken(user));
+            return Response.success(tokenUtils.createToken(user));
 
         } catch (UserAlreadyExistsException e) {
             return Response.error(ErrorCode.PHONE_NUMBER_REGISTERED);
@@ -64,4 +66,5 @@ public class RegistryController {
             return Response.error(ErrorCode.UNKNOWN);
         }
     }
+
 }

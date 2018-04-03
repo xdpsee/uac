@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   gmt_create   DATETIME    NOT NULL,
   gmt_modified DATETIME    NOT NULL,
   phone        VARCHAR(16) NOT NULL,
-  secret       VARCHAR(32) NOT NULL,
+  secret       VARCHAR(128) NOT NULL,
   nickname     VARCHAR(32) NOT NULL,
   avatar       VARCHAR(255)       DEFAULT '',
   profile      VARCHAR(4096)      DEFAULT '{}',

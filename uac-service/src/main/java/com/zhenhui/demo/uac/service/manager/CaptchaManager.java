@@ -25,7 +25,7 @@ public class CaptchaManager implements InitializingBean {
         cache = cacheManager.getCache("registry_captchas");
     }
 
-    public String createRegistryCaptcha(String phone, boolean create) {
+    public String createCaptcha(String phone, boolean create) {
 
         String captcha = null;
 
@@ -34,13 +34,13 @@ public class CaptchaManager implements InitializingBean {
             Element element = new Element(phone, captcha, true, 300, 300);
             cache.put(element);
         } else {
-            lookupRegistryCaptcha(phone);
+            lookupCaptcha(phone);
         }
 
         return captcha;
     }
 
-    public String lookupRegistryCaptcha(String phone) {
+    public String lookupCaptcha(String phone) {
         Element element = cache.get(phone);
         if (element != null && !element.isExpired()) {
             return (String) element.getObjectValue();
@@ -49,7 +49,7 @@ public class CaptchaManager implements InitializingBean {
         return null;
     }
 
-    public void invalidRegistryCaptcha(String phone) {
+    public void invalidCaptcha(String phone) {
         cache.remove(phone);
     }
 
