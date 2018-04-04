@@ -6,11 +6,12 @@ public enum ErrorCode {
     TOKEN_EXPIRED(-2, "令牌已过期"),
     TOKEN_INVALID(-1, "无效的令牌"),
     SUCCESS(0, "SUCCESS"),
-    ACCESS_DENIED(10000, "禁止访问"),
-    PHONE_NUMBER_INVALID(10001, "无效的电话号码"),
-    PHONE_NUMBER_REGISTERED(10002, "电话号码已被注册"),
 
+    ACCESS_DENIED(9999, "禁止访问"),
+    PHONE_NUMBER_INVALID(10000, "无效的电话号码"),
+    PHONE_NUMBER_REGISTERED(10001, "电话号码已被注册"),
 
+    CAPTCHA_CATEGORY_INVALID(10002, "验证码类别无效"),
     CAPTCHA_SEND_FAILURE(10003, "发送验证码失败"),
 
     CAPTCHA_MISMATCH(10004, "验证码错误"),

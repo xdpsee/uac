@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.zhenhui.demo.uac.service.common.WeiboService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import retrofit2.Retrofit;
@@ -20,9 +21,8 @@ public class AppConfig {
         return new ThreadPoolExecutor(16, 32, 2, TimeUnit.MINUTES, new LinkedBlockingQueue<>(128));
     }
 
-    @Bean(name = "weibo")
-    public Retrofit retrofit() {
-
+    @Bean
+    public WeiboService weiboService() {
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -37,7 +37,7 @@ public class AppConfig {
         return new Retrofit.Builder()
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                 .baseUrl("https://api.weibo.com/2/")
-                .build();
+                .build().create(WeiboService.class);
     }
 
 }

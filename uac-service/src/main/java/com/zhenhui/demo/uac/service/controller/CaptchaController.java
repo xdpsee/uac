@@ -10,10 +10,7 @@ import com.zhenhui.demo.uac.service.utils.PhoneUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.HashMap;
@@ -36,13 +33,23 @@ public class CaptchaController {
     @Autowired
     private ExecutorService executorService;
 
+    private static Map<String, Long> categoryTemplateMap = new HashMap<>();
+    static {
+        categoryTemplateMap.put("registry", 69463L);
+    }
+
     @ResponseBody
-    @RequestMapping("/captcha")
-    public DeferredResult<Response<Boolean>> getCaptcha(@RequestParam("phone") String phone) {
+    @RequestMapping(value = "/captcha", method = RequestMethod.POST)
+    public DeferredResult<Response<Boolean>> getCaptcha(@RequestParam("phone") String phone, @RequestParam("category") String category) {
 
         final DeferredResult<Response<Boolean>> result = new DeferredResult<>();
         if (!PhoneUtils.isValid(phone)) {
             result.setResult(Response.error(ErrorCode.PHONE_NUMBER_INVALID));
+            return result;
+        }
+
+        if (!categoryTemplateMap.containsKey(category)) {
+            result.setResult(Response.error(ErrorCode.CAPTCHA_CATEGORY_INVALID));
             return result;
         }
 
@@ -54,7 +61,7 @@ public class CaptchaController {
 
                 SmsSendResult sendResult = null;
                 try {
-                    sendResult = smsService.send(phone, 1L, params);
+                    sendResult = smsService.send(phone, categoryTemplateMap.get(category), params);
                 } catch (Exception e) {
                     logger.error("SMS send exception", e);
                 }

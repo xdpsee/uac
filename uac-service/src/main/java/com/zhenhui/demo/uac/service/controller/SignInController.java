@@ -16,7 +16,6 @@ import com.zhenhui.demo.uac.service.controller.request.WeiboSignin;
 import com.zhenhui.demo.uac.service.manager.CaptchaManager;
 import com.zhenhui.demo.uac.service.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Retrofit;
 
 @SuppressWarnings("unchecked")
 @RestController
@@ -50,8 +48,7 @@ public class SignInController {
     private TokenUtils tokenUtils;
 
     @Autowired
-    @Qualifier("weibo")
-    private Retrofit retrofit;
+    private WeiboService weiboService;
 
     @ResponseBody
     @RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -75,13 +72,11 @@ public class SignInController {
 
         final DeferredResult<Response<String>> result = new DeferredResult<>();
 
-        WeiboService weiboService = retrofit.create(WeiboService.class);
         Call<WeiboUserInfo> call = weiboService.getUserInfo(signin.getToken(), String.valueOf(signin.getUid()));
         call.enqueue(new Callback<WeiboUserInfo>() {
             @Override
             public void onFailure(Call<WeiboUserInfo> call, Throwable throwable) {
                 result.setResult(Response.error(ErrorCode.UNKNOWN));
-
             }
             @Override
             public void onResponse(Call<WeiboUserInfo> call, retrofit2.Response<WeiboUserInfo> response) {
