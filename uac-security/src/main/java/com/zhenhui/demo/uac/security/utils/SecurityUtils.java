@@ -1,19 +1,24 @@
 package com.zhenhui.demo.uac.security.utils;
 
-import com.zhenhui.demo.uac.common.Principal;
-import com.zhenhui.demo.uac.common.SocialType;
-import com.zhenhui.demo.uac.security.exception.ExpiresTokenException;
-import com.zhenhui.demo.uac.security.exception.InvalidTokenException;
-import io.jsonwebtoken.*;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-
-import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.crypto.spec.SecretKeySpec;
+
+import com.zhenhui.demo.uac.common.Principal;
+import com.zhenhui.demo.uac.common.SocialType;
+import com.zhenhui.demo.uac.security.exception.ExpiresTokenException;
+import com.zhenhui.demo.uac.security.exception.InvalidTokenException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 
 @SuppressWarnings("unused")
 public final class SecurityUtils implements InitializingBean {
@@ -69,7 +74,6 @@ public final class SecurityUtils implements InitializingBean {
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(signingKey)
-                    .requireIssuer(issuer)
                     .parseClaimsJws(token).getBody();
 
             Principal principal = new Principal();

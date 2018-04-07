@@ -14,7 +14,7 @@ VALUES (
   '18621816233',
   '$2a$09$bJSanuD8PWLGgfXxLW9wSOPssXCm4O/F1EkipT50JVd8sCsC.JDGa',
   'zhenhui',
-  '',
+  'https://ss0.bdstatic.com/7Ls0a8Sm1A5BphGlnYG/sys/portrait/item/78177a6863656e5e02',
   '{}',
   '["USER","ADMIN"]'
 );

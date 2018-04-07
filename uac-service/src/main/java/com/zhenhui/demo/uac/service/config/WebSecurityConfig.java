@@ -1,7 +1,7 @@
 package com.zhenhui.demo.uac.service.config;
 
-import com.zhenhui.demo.uac.security.auth.AuthenticationTokenFilter;
 import com.zhenhui.demo.uac.security.auth.AccessDeniedHandlerImpl;
+import com.zhenhui.demo.uac.security.auth.AuthenticationTokenFilter;
 import com.zhenhui.demo.uac.security.utils.SecurityUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,17 +43,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity security) throws Exception {
         security
-                .csrf().disable()
-                .exceptionHandling().accessDeniedHandler(new AccessDeniedHandlerImpl())
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .csrf().disable()
+            .exceptionHandling().accessDeniedHandler(new AccessDeniedHandlerImpl())
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         security.authorizeRequests()
-                .antMatchers("/druid/**").permitAll()
-                .antMatchers("/user/registry"
-                        , "/auth/login/**"
-                        , "/captcha").permitAll()
-                .anyRequest().authenticated();
+            .antMatchers("/druid/**").permitAll()
+            .antMatchers("/user/test"
+                , "/user/registry"
+                , "/auth/login/**"
+                , "/captcha").permitAll()
+            .anyRequest().authenticated();
 
         // JWT filter
         security.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
