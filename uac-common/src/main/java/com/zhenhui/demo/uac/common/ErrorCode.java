@@ -21,10 +21,12 @@ public enum ErrorCode {
 
     USER_NOT_FOUND(10007, "用户不存在"),
     SECRET_NOT_MATCH(10008, "密码错误"),
-    WEIBO_GET_USER_ERROR(10009, "获取微博用户信息错误"),
-    NO_USER_BOUND(10010, "社交账号未绑定系统账号"),
-    WEIBO_NO_AUTH(10011, "微博未认证,请使用微博登陆重试"),
-    USER_BIND_ERROR(10012, "用户绑定错误"),
+    SOCIAL_GET_USER_ERROR(10009, "获取用户信息错误"),
+    SOCIAL_NO_USER_BOUND(10010, "未绑定系统账号"),
+    SOCIAL_NO_AUTH(10011, "社交账号未认证,请使用社交账号登陆重试"),
+    SOCIAL_USER_BIND_ERROR(10012, "用户绑定错误"),
+    SOCIAL_UNBIND_ERROR(10013, "解除绑定错误"),
+
     ;
 
     public final int code;

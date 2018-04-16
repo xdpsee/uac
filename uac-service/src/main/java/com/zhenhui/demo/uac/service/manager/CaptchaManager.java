@@ -22,7 +22,7 @@ public class CaptchaManager implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        cache = cacheManager.getCache("registry_captchas");
+        cache = cacheManager.getCache("captchas");
     }
 
     public String createCaptcha(String phone, boolean create) {

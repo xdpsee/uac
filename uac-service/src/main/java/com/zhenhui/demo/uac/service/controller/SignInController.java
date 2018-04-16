@@ -1,6 +1,7 @@
 package com.zhenhui.demo.uac.service.controller;
 
 import com.zhenhui.demo.uac.common.ErrorCode;
+import com.zhenhui.demo.uac.common.Principal;
 import com.zhenhui.demo.uac.common.Response;
 import com.zhenhui.demo.uac.common.SocialType;
 import com.zhenhui.demo.uac.core.dataobject.SocialAccount;
@@ -8,24 +9,27 @@ import com.zhenhui.demo.uac.core.dataobject.User;
 import com.zhenhui.demo.uac.core.repository.SocialAccountRepository;
 import com.zhenhui.demo.uac.core.repository.UserRepository;
 import com.zhenhui.demo.uac.core.repository.exception.UserAlreadyExistsException;
-import com.zhenhui.demo.uac.service.common.WeiboService;
-import com.zhenhui.demo.uac.service.common.WeiboUserInfo;
+import com.zhenhui.demo.uac.security.auth.TokenBasedAuthentication;
 import com.zhenhui.demo.uac.service.controller.request.Signin;
-import com.zhenhui.demo.uac.service.controller.request.WeiboBinding;
-import com.zhenhui.demo.uac.service.controller.request.WeiboSignin;
+import com.zhenhui.demo.uac.service.controller.request.SocialBinding;
+import com.zhenhui.demo.uac.service.controller.request.SocialSignin;
+import com.zhenhui.demo.uac.service.controller.request.SocialUnbinding;
+import com.zhenhui.demo.uac.service.controller.request.UserBinding;
 import com.zhenhui.demo.uac.service.manager.CaptchaManager;
+import com.zhenhui.demo.uac.service.manager.SocialSigninManager;
 import com.zhenhui.demo.uac.service.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
-import retrofit2.Call;
-import retrofit2.Callback;
 
 @SuppressWarnings("unchecked")
 @RestController
@@ -48,10 +52,10 @@ public class SignInController {
     private TokenUtils tokenUtils;
 
     @Autowired
-    private WeiboService weiboService;
+    private SocialSigninManager socialSigninManager;
 
     @ResponseBody
-    @RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Response<String> login(@RequestBody Signin signin) {
 
         final User user = userRepository.queryUser(signin.getPhone());
@@ -67,43 +71,24 @@ public class SignInController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/login/weibo", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public DeferredResult<Response<String>> loginWeibo(@RequestBody WeiboSignin signin) {
+    @RequestMapping(value = "/login/social", method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public DeferredResult<Response<String>> loginSocial(@RequestBody SocialSignin signin) {
 
         final DeferredResult<Response<String>> result = new DeferredResult<>();
 
-        Call<WeiboUserInfo> call = weiboService.getUserInfo(signin.getToken(), String.valueOf(signin.getUid()));
-        call.enqueue(new Callback<WeiboUserInfo>() {
-            @Override
-            public void onFailure(Call<WeiboUserInfo> call, Throwable throwable) {
-                result.setResult(Response.error(ErrorCode.UNKNOWN));
-            }
-            @Override
-            public void onResponse(Call<WeiboUserInfo> call, retrofit2.Response<WeiboUserInfo> response) {
-                WeiboUserInfo userInfo = response.body();
-                if (userInfo == null || userInfo.getError_code() != 0) { // error
-                    result.setResult(Response.error(ErrorCode.WEIBO_GET_USER_ERROR));
-                } else {
-                    result.setResult(doLoginWeibo(userInfo));
-                }
-            }
-        });
+        socialSigninManager.socialLogin(signin, result);
 
         return result;
     }
 
     @ResponseBody
-    @RequestMapping(value = "/login/weibo/bind", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Response<String> bindWeibo(@RequestBody WeiboBinding binding) {
+    @RequestMapping(value = "/login/social/bind", method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Response<String> bindSocial(@RequestBody UserBinding binding) {
 
         final String phone = binding.getPhone();
         final String captcha = captchaManager.lookupCaptcha(phone);
-
-        final User user = userRepository.queryUser(phone);
-        if (null == user) {
-            return Response.error(ErrorCode.USER_NOT_FOUND);
-        }
-
         if (StringUtils.isEmpty(captcha)) {
             return Response.error(ErrorCode.CAPTCHA_EXPIRED);
         }
@@ -112,9 +97,20 @@ public class SignInController {
             return Response.error(ErrorCode.CAPTCHA_MISMATCH);
         }
 
-        final SocialAccount socialAccount = socialAccountRepository.getSocialAccount(SocialType.WEIBO, binding.getOpenId());
+        final SocialAccount socialAccount = socialAccountRepository.getSocialAccount(binding.getType(),
+            binding.getOpenId());
         if (socialAccount == null) {
-            return Response.error(ErrorCode.WEIBO_NO_AUTH);
+            return Response.error(ErrorCode.SOCIAL_NO_AUTH);
+        }
+
+        User user;
+        try {
+            user = userRepository.createUser(binding.getPhone(), binding.getSecret());
+        } catch (UserAlreadyExistsException e) {
+            user = userRepository.queryUser(phone);
+            if (!passwordEncoder.matches(binding.getSecret(), user.getSecret())) {
+                return Response.error(ErrorCode.SECRET_NOT_MATCH);
+            }
         }
 
         final Long originUserId = socialAccount.getUserId() != null ? socialAccount.getUserId() : 0L;
@@ -124,36 +120,79 @@ public class SignInController {
             socialAccount.setUserId(user.getId());
         }
 
-        if (null != socialAccountRepository.updateUserId(SocialType.WEIBO, socialAccount.getOpenId(), originUserId, user.getId())) {
+        if (null != socialAccountRepository.updateUserId(binding.getType(), socialAccount.getOpenId(), originUserId,
+            user.getId())) {
             return Response.success(tokenUtils.createToken(user));
         }
 
-        return Response.error(ErrorCode.USER_BIND_ERROR);
+        return Response.error(ErrorCode.SOCIAL_USER_BIND_ERROR);
     }
 
-    private Response<String> doLoginWeibo(WeiboUserInfo userInfo) {
-        SocialAccount socialAccount = new SocialAccount();
-        socialAccount.setType(SocialType.WEIBO);
-        socialAccount.setOpenId(userInfo.getId());
-        socialAccount.setToken("");
-        socialAccount.setNickname(userInfo.getName());
-        socialAccount.setAvatar(userInfo.getAvatar_hd());
-        socialAccount.setActivated(true);
+    @ResponseBody
+    @PreAuthorize("hasAuthority('USER')")
+    @RequestMapping(value = "/social/bind", method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Response<Boolean> socialBind(@RequestBody SocialBinding binding) {
+
+        TokenBasedAuthentication authentication = (TokenBasedAuthentication)SecurityContextHolder.getContext()
+            .getAuthentication();
+        Principal principal = (Principal)authentication.getPrincipal();
+
+        User user = userRepository.queryUser(principal.getUserId());
+        if (null == user) {
+            return Response.error(ErrorCode.USER_NOT_FOUND);
+        }
+
+        SocialAccount socialAccount = new SocialAccount(binding.getType()
+            , binding.getOpenId()
+            , binding.getNickname()
+            , binding.getAvatar());
 
         try {
+            socialAccount.setUserId(user.getId());
             socialAccountRepository.createSocialAccount(socialAccount);
+            return Response.success(true);
+
         } catch (UserAlreadyExistsException e) {
-            socialAccount = socialAccountRepository.getSocialAccount(SocialType.WEIBO, userInfo.getId());
+            socialAccount = socialAccountRepository.getSocialAccount(SocialType.WEIBO, binding.getOpenId());
         }
 
-        if (socialAccount.getUserId() > 0) {
-            User user = userRepository.queryUser(socialAccount.getUserId());
-            if (user != null) {
-                return Response.success(tokenUtils.createToken(user));
+        if (socialAccount.getUserId() == 0) {
+            if (null != socialAccountRepository.updateUserId(binding.getType(), binding.getOpenId(), 0, user.getId())) {
+                return Response.success(true);
             }
+        } else if (socialAccount.getUserId().equals(user.getId())) {
+            return Response.success(true);
         }
 
-        return Response.error(ErrorCode.NO_USER_BOUND);
+        return Response.error(ErrorCode.SOCIAL_USER_BIND_ERROR);
+    }
+
+    @ResponseBody
+    @PreAuthorize("hasAuthority('USER')")
+    @RequestMapping(value = "/social/unbind", method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Response<Boolean> socialUnbind(@RequestBody SocialUnbinding unbinding) {
+
+        TokenBasedAuthentication authentication = (TokenBasedAuthentication)SecurityContextHolder.getContext()
+            .getAuthentication();
+        final Principal principal = (Principal)authentication.getPrincipal();
+        final User user = userRepository.queryUser(principal.getUserId());
+        if (null == user) {
+            return Response.error(ErrorCode.USER_NOT_FOUND);
+        }
+
+        final SocialAccount socialAccount = socialAccountRepository.getSocialAccount(unbinding.getType(),
+            unbinding.getOpenId());
+        if (null == socialAccount || !user.getId().equals(socialAccount.getUserId())) {
+            return Response.error(ErrorCode.SOCIAL_NO_USER_BOUND);
+        }
+
+        if (null != socialAccountRepository.updateUserId(unbinding.getType(), unbinding.getOpenId(), user.getId(), 0)) {
+            return Response.success(true);
+        }
+
+        return Response.error(ErrorCode.SOCIAL_UNBIND_ERROR);
     }
 
 }

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ public class RegistryController {
     @Autowired
     private TokenUtils tokenUtils;
 
-    @RequestMapping(path = "", produces = "application/json; charset=utf-8")
+    @RequestMapping(path = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
     public Response<String> registry(@RequestParam("phone") String phone
             , @RequestParam("secret") String secret
@@ -63,6 +64,7 @@ public class RegistryController {
         } catch (UserAlreadyExistsException e) {
             return Response.error(ErrorCode.PHONE_NUMBER_REGISTERED);
         } catch (Exception e) {
+            logger.error("RegistryController.registry exception = {}", e);
             return Response.error(ErrorCode.UNKNOWN);
         }
     }

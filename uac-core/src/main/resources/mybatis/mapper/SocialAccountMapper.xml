@@ -13,10 +13,8 @@
                 column="type"
                 typeHandler="com.zhenhui.demo.uac.core.repository.mybatis.type.handlers.SocialTypeHandler"/>
         <result property="openId" column="open_id"/>
-        <result property="token" column="token"/>
         <result property="nickname" column="nickname"/>
         <result property="avatar" column="avatar"/>
-        <result property="activated" column="activated"/>
         <result property="userId" column="user_id"/>
     </resultMap>
 
@@ -27,20 +25,16 @@
             gmt_modified,
             type,
             open_id,
-            token,
             nickname,
             avatar,
-            activated,
             user_id
         ) VALUES (
             NOW(),
             NOW(),
             #{type},
             #{openId},
-            #{token},
             #{nickname},
             #{avatar},
-            #{activated},
             #{userId}
         );
     </insert>

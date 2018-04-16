@@ -19,10 +19,8 @@ CREATE TABLE IF NOT EXISTS social_accounts (
   gmt_modified DATETIME    NOT NULL,
   type         INTEGER     NOT NULL,
   open_id      BIGINT      NOT NULL,
-  token        VARCHAR(64) NOT NULL,
   nickname     VARCHAR(32)        DEFAULT '',
   avatar       VARCHAR(255)       DEFAULT '',
-  activated    BOOL               DEFAULT 0,
   user_id      BIGINT             DEFAULT 0,
   CONSTRAINT social_account_uk_1 UNIQUE (type, open_id)
 )DEFAULT CHARSET=utf8;

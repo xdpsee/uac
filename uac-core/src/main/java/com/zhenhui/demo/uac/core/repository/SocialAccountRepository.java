@@ -1,15 +1,19 @@
 package com.zhenhui.demo.uac.core.repository;
 
-import com.zhenhui.demo.uac.core.dataobject.SocialAccount;
+import java.util.List;
+
 import com.zhenhui.demo.uac.common.SocialType;
+import com.zhenhui.demo.uac.core.dataobject.SocialAccount;
 import com.zhenhui.demo.uac.core.repository.exception.UserAlreadyExistsException;
 import com.zhenhui.demo.uac.core.repository.mybatis.mapper.SocialAccountMapper;
 import com.zhenhui.demo.uac.core.utils.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.*;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @Component
@@ -49,7 +53,7 @@ public class SocialAccountRepository {
     }
 
     @Caching(put = {
-            @CachePut(key = "#type.name() + #openId", unless = "#result == null ")
+            @CachePut(key = "#type.name() + #openId", unless = "#result == null")
     }, evict = {
             @CacheEvict(key = "#result.userId")
     })

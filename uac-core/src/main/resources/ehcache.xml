@@ -16,49 +16,46 @@
        clearOnFlush：内存数量最大时是否清除。
     -->
     <defaultCache
-            maxElementsInMemory="10000"
+            maxElementsInMemory="100000"
+            maxElementsOnDisk="100000"
             eternal="false"
-            timeToIdleSeconds="120"
             timeToLiveSeconds="120"
             overflowToDisk="true"
-            maxElementsOnDisk="10000000"
             diskPersistent="false"
             diskExpiryThreadIntervalSeconds="120"
             memoryStoreEvictionPolicy="LRU"
     />
 
     <cache name="users"
-           maxEntriesLocalHeap="10000"
-           maxEntriesLocalDisk="1000"
+           maxEntriesLocalHeap="100000"
+           maxEntriesLocalDisk="200000"
            eternal="false"
-           diskSpoolBufferSizeMB="20"
-           timeToIdleSeconds="300"
-           timeToLiveSeconds="600"
+           diskSpoolBufferSizeMB="32"
+           timeToLiveSeconds="3600"
+           overflowToDisk="true"
            memoryStoreEvictionPolicy="LRU">
-        <persistence strategy="localTempSwap"/>
     </cache>
 
     <cache name="social_accounts"
-           maxEntriesLocalHeap="10000"
-           maxEntriesLocalDisk="1000"
+           maxEntriesLocalHeap="100000"
+           maxEntriesLocalDisk="200000"
            eternal="false"
-           diskSpoolBufferSizeMB="20"
-           timeToIdleSeconds="300"
-           timeToLiveSeconds="600"
+           diskSpoolBufferSizeMB="32"
+           timeToLiveSeconds="3600"
+           overflowToDisk="true"
            memoryStoreEvictionPolicy="LRU">
-        <persistence strategy="localTempSwap"/>
     </cache>
 
-    <cache name="registry_captchas"
+    <cache name="captchas"
            maxEntriesLocalHeap="10000"
            maxEntriesLocalDisk="10000"
            eternal="false"
            diskSpoolBufferSizeMB="20"
-           timeToIdleSeconds="300"
            timeToLiveSeconds="300"
+           overflowToDisk="true"
            memoryStoreEvictionPolicy="FIFO">
-        <persistence strategy="localTempSwap"/>
     </cache>
+
 
 </ehcache>
 

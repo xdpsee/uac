@@ -1,5 +1,10 @@
 package com.zhenhui.demo.uac.service.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+
 import com.zhenhui.common.SmsSendResult;
 import com.zhenhui.common.SmsService;
 import com.zhenhui.demo.uac.common.ErrorCode;
@@ -10,13 +15,13 @@ import com.zhenhui.demo.uac.service.utils.PhoneUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionException;
 
 @SuppressWarnings("unchecked")
 @RestController
@@ -39,7 +44,7 @@ public class CaptchaController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/captcha", method = RequestMethod.POST)
+    @RequestMapping(value = "/captcha", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public DeferredResult<Response<Boolean>> getCaptcha(@RequestParam("phone") String phone, @RequestParam("category") String category) {
 
         final DeferredResult<Response<Boolean>> result = new DeferredResult<>();
@@ -63,7 +68,7 @@ public class CaptchaController {
                 try {
                     sendResult = smsService.send(phone, categoryTemplateMap.get(category), params);
                 } catch (Exception e) {
-                    logger.error("SMS send exception", e);
+                    logger.error("SMS send exception {}", e);
                 }
 
                 if (sendResult != null) {
@@ -79,6 +84,9 @@ public class CaptchaController {
             });
         } catch (RejectedExecutionException e) {
             result.setResult(Response.error(ErrorCode.SYSTEM_OVERLOAD));
+        } catch (Exception e) {
+            logger.error("CaptchaController.getCaptcha exception {}", e);
+            result.setResult(Response.error(ErrorCode.UNKNOWN));
         }
 
         return result;

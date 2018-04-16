@@ -25,7 +25,6 @@ INSERT INTO social_accounts (
   gmt_modified,
   type,
   open_id,
-  token,
   nickname,
   avatar,
   user_id
@@ -34,7 +33,6 @@ INSERT INTO social_accounts (
   NOW(),
   1,
   10001,
-  'token-token-token',
   'jerry',
   '',
   1

@@ -1,7 +1,10 @@
 package com.zhenhui.demo.uac.service;
 
-import com.zhenhui.demo.uac.core.dataobject.SocialAccount;
+import java.util.Date;
+import java.util.List;
+
 import com.zhenhui.demo.uac.common.SocialType;
+import com.zhenhui.demo.uac.core.dataobject.SocialAccount;
 import com.zhenhui.demo.uac.core.repository.SocialAccountRepository;
 import com.zhenhui.demo.uac.core.repository.exception.UserAlreadyExistsException;
 import org.junit.Test;
@@ -10,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import java.util.Date;
-import java.util.List;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertNotNull;
@@ -88,10 +88,8 @@ public class SocialAccountRepositoryTests {
         SocialAccount account = new SocialAccount();
         account.setType(SocialType.QQ);
         account.setOpenId(274425775L);
-        account.setToken("token-token-token");
         account.setNickname("NULL");
         account.setAvatar("");
-        account.setActivated(true);
         account.setGmtCreate(new Date());
         account.setGmtModified(new Date());
 
@@ -104,10 +102,8 @@ public class SocialAccountRepositoryTests {
         SocialAccount account = new SocialAccount();
         account.setType(SocialType.QQ);
         account.setOpenId(20001L);
-        account.setToken("token-token-token");
         account.setNickname("NULL");
         account.setAvatar("");
-        account.setActivated(true);
         account.setGmtCreate(new Date());
         account.setGmtModified(new Date());
 

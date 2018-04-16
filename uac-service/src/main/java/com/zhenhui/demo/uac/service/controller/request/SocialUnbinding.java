@@ -1,15 +1,13 @@
 package com.zhenhui.demo.uac.service.controller.request;
 
+import com.zhenhui.demo.uac.common.SocialType;
 import lombok.Data;
 
 @Data
-public class WeiboBinding {
+public class SocialUnbinding {
 
-    private String phone;
-
-    private String captcha;
+    private SocialType type;
 
     private Long openId;
 
 }
-

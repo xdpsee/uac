@@ -48,4 +48,12 @@ public final class Response<T> {
         return response;
     }
 
+    public static <T> Response error(ErrorCode error, T data) {
+        Response<T> response = new Response<>();
+        response.error = error.code;
+        response.message = error.comment;
+        response.data = data;
+        return response;
+    }
+
 }
