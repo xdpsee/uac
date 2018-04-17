@@ -31,8 +31,8 @@ INSERT INTO social_accounts (
 ) VALUES (
   NOW(),
   NOW(),
-  1,
-  10001,
+  2,
+  5035618596,
   'jerry',
   '',
   1

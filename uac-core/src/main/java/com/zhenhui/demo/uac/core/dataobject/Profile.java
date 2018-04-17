@@ -1,9 +1,9 @@
 package com.zhenhui.demo.uac.core.dataobject;
 
+import java.io.Serializable;
+
 import com.zhenhui.demo.uac.common.Gender;
 import lombok.Data;
-
-import java.io.Serializable;
 
 @Data
 public class Profile implements Serializable {
@@ -19,8 +19,6 @@ public class Profile implements Serializable {
     private String province;
 
     private String city;
-
-    private String district;
 
     private String address;
 }
